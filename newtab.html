@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Task Board</title>
+  <link rel="stylesheet" href="newtab.css">
+</head>
+<body>
+  <div class="board">
+    <div class="column" data-status="todo">
+      <div class="column-header">
+        <span class="dot todo"></span>
+        <h2>Todo</h2>
+        <span class="count" data-count="todo">0</span>
+        <button class="add-btn" data-add="todo">+</button>
+      </div>
+      <div class="task-list" data-status="todo"></div>
+    </div>
+    <div class="column" data-status="in-progress">
+      <div class="column-header">
+        <span class="dot in-progress"></span>
+        <h2>In Progress</h2>
+        <span class="count" data-count="in-progress">0</span>
+        <button class="add-btn" data-add="in-progress">+</button>
+      </div>
+      <div class="task-list" data-status="in-progress"></div>
+    </div>
+    <div class="column" data-status="in-review">
+      <div class="column-header">
+        <span class="dot in-review"></span>
+        <h2>In Review</h2>
+        <span class="count" data-count="in-review">0</span>
+        <button class="add-btn" data-add="in-review">+</button>
+      </div>
+      <div class="task-list" data-status="in-review"></div>
+    </div>
+    <div class="column" data-status="done">
+      <div class="column-header">
+        <span class="dot done"></span>
+        <h2>Done</h2>
+        <span class="count" data-count="done">0</span>
+        <button class="add-btn" data-add="done">+</button>
+      </div>
+      <div class="task-list" data-status="done"></div>
+    </div>
+  </div>
+  <script src="newtab.js"></script>
+</body>
+</html>

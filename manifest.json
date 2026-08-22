@@ -1,0 +1,10 @@
+{
+  "manifest_version": 3,
+  "name": "Task Board",
+  "version": "1.0.0",
+  "description": "Kanban task tracker",
+  "chrome_url_overrides": {
+    "newtab": "newtab.html"
+  },
+  "permissions": ["storage"]
+}
