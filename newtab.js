@@ -3,13 +3,27 @@ const STORAGE_KEY = 'taskboard_tasks';
 function loadTasks() {
   return new Promise(resolve => {
     chrome.storage.local.get(STORAGE_KEY, data => {
-      resolve(data[STORAGE_KEY] || []);
+      const tasks = data[STORAGE_KEY] || [];
+      tasks.forEach(t => { if (!t.createdAt) t.createdAt = Date.now(); });
+      resolve(tasks);
     });
   });
 }
 
 function saveTasks(tasks) {
   chrome.storage.local.set({ [STORAGE_KEY]: tasks });
+}
+
+function formatTime(ts) {
+  const d = new Date(ts);
+  const pad = n => String(n).padStart(2, '0');
+  return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+
+function isSameDay(ts, filter) {
+  const d = new Date(ts);
+  const f = new Date(filter);
+  return d.getFullYear() === f.getFullYear() && d.getMonth() === f.getMonth() && d.getDate() === f.getDate();
 }
 
 function createTaskEl(task) {
@@ -22,6 +36,10 @@ function createTaskEl(task) {
   title.className = 'task-title';
   title.textContent = task.title;
 
+  const time = document.createElement('div');
+  time.className = 'task-time';
+  time.textContent = formatTime(task.createdAt);
+
   const del = document.createElement('button');
   del.className = 'delete-btn';
   del.textContent = '×';
@@ -31,6 +49,7 @@ function createTaskEl(task) {
   });
 
   card.appendChild(title);
+  card.appendChild(time);
   card.appendChild(del);
 
   card.addEventListener('dragstart', e => {
@@ -46,14 +65,19 @@ function createTaskEl(task) {
   return card;
 }
 
+let currentDateFilter = null;
+
 function render(tasks) {
   const statuses = ['todo', 'in-progress', 'in-review', 'done'];
+  const filtered = currentDateFilter
+    ? tasks.filter(t => isSameDay(t.createdAt, currentDateFilter))
+    : tasks;
   statuses.forEach(status => {
     const list = document.querySelector(`.task-list[data-status="${status}"]`);
     list.innerHTML = '';
-    const filtered = tasks.filter(t => t.status === status);
-    document.querySelector(`[data-count="${status}"]`).textContent = filtered.length;
-    filtered.forEach(t => list.appendChild(createTaskEl(t)));
+    const colTasks = filtered.filter(t => t.status === status);
+    document.querySelector(`[data-count="${status}"]`).textContent = colTasks.length;
+    colTasks.forEach(t => list.appendChild(createTaskEl(t)));
   });
 }
 
@@ -88,6 +112,24 @@ async function init() {
       moveTask(taskId, newStatus);
     });
   });
+
+  const dateInput = document.getElementById('dateFilter');
+  const clearBtn = document.getElementById('clearFilter');
+
+  dateInput.addEventListener('change', () => {
+    if (dateInput.value) {
+      currentDateFilter = dateInput.value;
+      clearBtn.style.display = 'inline';
+      render(allTasks);
+    }
+  });
+
+  clearBtn.addEventListener('click', () => {
+    currentDateFilter = null;
+    dateInput.value = '';
+    clearBtn.style.display = 'none';
+    render(allTasks);
+  });
 }
 
 function addTask(status) {
@@ -108,7 +150,7 @@ function addTask(status) {
       submitted = true;
       const title = input.value.trim();
       if (title) {
-        allTasks.push({ id: Date.now().toString(), title, status });
+        allTasks.push({ id: Date.now().toString(), title, status, createdAt: Date.now() });
         saveTasks(allTasks);
         render(allTasks);
       }
@@ -122,7 +164,7 @@ function addTask(status) {
     if (submitted) return;
     const title = input.value.trim();
     if (title) {
-      allTasks.push({ id: Date.now().toString(), title, status });
+      allTasks.push({ id: Date.now().toString(), title, status, createdAt: Date.now() });
       saveTasks(allTasks);
       render(allTasks);
     } else {

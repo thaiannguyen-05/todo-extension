@@ -12,6 +12,39 @@ body {
   padding: 24px;
 }
 
+.toolbar {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.date-filter {
+  background: #2d2e31;
+  border: 1px solid #444;
+  border-radius: 6px;
+  padding: 6px 10px;
+  color: #e1e4e8;
+  font-size: 13px;
+}
+
+.date-filter::-webkit-calendar-picker-indicator {
+  filter: invert(0.7);
+}
+
+.clear-filter {
+  background: #444;
+  border: none;
+  border-radius: 6px;
+  padding: 6px 10px;
+  color: #e1e4e8;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.clear-filter:hover {
+  background: #555;
+}
+
 .board {
   display: flex;
   gap: 16px;
@@ -114,6 +147,12 @@ body {
   font-size: 13px;
   line-height: 1.4;
   word-break: break-word;
+}
+
+.task-card .task-time {
+  font-size: 11px;
+  color: #666;
+  margin-top: 4px;
 }
 
 .task-card .delete-btn {
