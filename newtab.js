@@ -1,4 +1,5 @@
 const STORAGE_KEY = 'taskboard_tasks';
+const BG_KEY = 'taskboard_bg';
 
 function loadTasks() {
   return new Promise(resolve => {
@@ -129,6 +130,35 @@ async function init() {
     dateInput.value = '';
     clearBtn.style.display = 'none';
     render(allTasks);
+  });
+
+  const bgUpload = document.getElementById('bgUpload');
+  const clearBg = document.getElementById('clearBg');
+
+  chrome.storage.local.get(BG_KEY, data => {
+    if (data[BG_KEY]) {
+      document.body.style.backgroundImage = `url(${data[BG_KEY]})`;
+      clearBg.style.display = 'inline';
+    }
+  });
+
+  bgUpload.addEventListener('change', e => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      const dataUrl = reader.result;
+      chrome.storage.local.set({ [BG_KEY]: dataUrl });
+      document.body.style.backgroundImage = `url(${dataUrl})`;
+      clearBg.style.display = 'inline';
+    };
+    reader.readAsDataURL(file);
+  });
+
+  clearBg.addEventListener('click', () => {
+    chrome.storage.local.remove(BG_KEY);
+    document.body.style.backgroundImage = '';
+    clearBg.style.display = 'none';
   });
 }
 
